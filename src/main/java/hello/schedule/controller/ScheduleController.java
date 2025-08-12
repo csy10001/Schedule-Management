@@ -28,7 +28,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules/{scheduleId}")
-    public  ResponseEntity<ScheduleResponse> getScheduleById(
+    public ResponseEntity<ScheduleResponse> getScheduleById(
             @PathVariable Long scheduleId
     ) {
         return ResponseEntity.ok(scheduleService.findById(scheduleId));
@@ -43,10 +43,9 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/schedules/{scheduleId}")
-    public void deleteSchedule(
-            @PathVariable Long scheduleId,
-            @RequestBody ScheduleRequest request
+    public ResponseEntity<ScheduleResponse> deleteSchedule(
+            @PathVariable Long scheduleId
     ) {
-        scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.ok(scheduleService.deleteSchedule(scheduleId));
     }
 }

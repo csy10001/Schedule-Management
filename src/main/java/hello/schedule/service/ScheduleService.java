@@ -68,10 +68,16 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void deleteSchedule(Long scheduleId) {
+    public ScheduleResponse deleteSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("그런 일정의 id는 없어요")
+                ()-> new IllegalArgumentException("그런 id의 일정은 없어요")
         );
         scheduleRepository.delete(schedule);
+        return new ScheduleResponse(
+                schedule.getId(),
+                schedule.getTitle(),
+                schedule.getUser().getUsername(),  // user 연관관계라면 이렇게
+                schedule.getContent()
+        );
     }
 }

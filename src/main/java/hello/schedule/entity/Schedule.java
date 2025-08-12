@@ -1,9 +1,6 @@
 package hello.schedule.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,15 +23,8 @@ public class Schedule extends BaseEntity {
         this.content = content;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }
