@@ -2,7 +2,6 @@ package hello.schedule.controller;
 
 import hello.schedule.dto.UserRequest;
 import hello.schedule.dto.UserResponse;
-import hello.schedule.entity.User;
 import hello.schedule.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +49,4 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.deleteUser(userId));
     }
-
-
 }
