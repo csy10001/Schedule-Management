@@ -3,7 +3,9 @@ package hello.schedule.service;
 import hello.schedule.dto.ScheduleRequest;
 import hello.schedule.dto.ScheduleResponse;
 import hello.schedule.entity.Schedule;
+import hello.schedule.entity.User;
 import hello.schedule.repository.ScheduleRepository;
+import hello.schedule.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,17 +17,25 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public ScheduleResponse save(ScheduleRequest request) {
-        Schedule schedule = new Schedule(request.getTitle(), request.getUsername(), request.getContent());
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        Schedule schedule = new Schedule(request.getTitle(), request.getContent(), user);
+
         Schedule savedSchedule = scheduleRepository.save(schedule);
+
         return new ScheduleResponse(
                 savedSchedule.getId(),
                 savedSchedule.getTitle(),
-                savedSchedule.getUsername(),
-                savedSchedule.getContent());
+                savedSchedule.getUser().getUsername(),
+                savedSchedule.getContent()
+        );
     }
+
 
     @Transactional(readOnly = true)
     public List<ScheduleResponse> findAll() {
@@ -34,38 +44,46 @@ public class ScheduleService {
                 .map(schedule -> new ScheduleResponse(
                         schedule.getId(),
                         schedule.getTitle(),
-                        schedule.getContent(),
-                        schedule.getUsername()
+                        schedule.getUser().getUsername(),
+                        schedule.getContent()
                 )).toList();
     }
+
 
     @Transactional(readOnly = true)
     public ScheduleResponse findById(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new IllegalArgumentException("그런 일정의 id가 없어요")
+                () -> new IllegalArgumentException("그런 일정의 id가 없어요")
         );
         return new ScheduleResponse(
                 schedule.getId(),
                 schedule.getTitle(),
-                schedule.getUsername(),
+                schedule.getUser().getUsername(),
                 schedule.getContent());
     }
+
 
     @Transactional
     public ScheduleResponse updateSchedule(Long scheduleId, ScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new IllegalArgumentException("그런 일정의 id는 없어요")
+                () -> new IllegalArgumentException("그런 일정의 id는 없어요")
         );
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
         schedule.setTitle(request.getTitle());
         schedule.setContent(request.getContent());
-        schedule.setUsername(request.getUsername());
+        schedule.setUser(user);
 
         return new ScheduleResponse(
                 schedule.getId(),
                 schedule.getTitle(),
-                schedule.getUsername(),
+                schedule.getUser().getUsername(),
                 schedule.getContent());
     }
+
+
 
     @Transactional
     public ScheduleResponse deleteSchedule(Long scheduleId) {

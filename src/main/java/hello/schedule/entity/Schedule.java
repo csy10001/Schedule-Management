@@ -10,21 +10,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Schedule extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String username;
-    private String content;
 
-    public Schedule(String title, String username, String content) {
-        this.title = title;
-        this.username = username;
-        this.content = content;
-    }
+    private String title;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User user; // 작성자
 
+    public Schedule(String title, String content, User user) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+    }
 }

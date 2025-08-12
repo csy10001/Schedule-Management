@@ -3,6 +3,8 @@ package hello.schedule.controller;
 import hello.schedule.dto.ScheduleRequest;
 import hello.schedule.dto.ScheduleResponse;
 import hello.schedule.service.ScheduleService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,19 @@ public class ScheduleController {
 
     @PostMapping("/schedules")
     public ResponseEntity<ScheduleResponse> save(
-            @RequestBody ScheduleRequest request
+            @RequestBody ScheduleRequest request,
+            HttpServletRequest httpRequest
     ) {
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Long userId = (Long) session.getAttribute("Login_User");
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        request.setUserId(userId);
+
         return ResponseEntity.ok(scheduleService.save(request));
     }
 
@@ -37,9 +50,21 @@ public class ScheduleController {
     @PutMapping("/schedules/{scheduleId}")
     public ResponseEntity<ScheduleResponse> updateSchedule(
             @PathVariable Long scheduleId,
-            @RequestBody ScheduleRequest request
+            @RequestBody ScheduleRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return ResponseEntity.ok(scheduleService.save(request));
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Long userId = (Long) session.getAttribute("Login_User");
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        request.setUserId(userId);
+
+        return ResponseEntity.ok(scheduleService.updateSchedule(scheduleId, request));
     }
 
     @DeleteMapping("/schedules/{scheduleId}")
