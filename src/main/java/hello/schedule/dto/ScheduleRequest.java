@@ -1,15 +1,14 @@
 package hello.schedule.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class ScheduleRequest {
 
     private String title;
     private String content;
+    @Setter
     private Long userId;
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }
